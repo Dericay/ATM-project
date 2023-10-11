@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
@@ -27,7 +28,7 @@ namespace ATM_project
             Users[4, 1] = "1111";
 
             decimal[][] accArray = new decimal[5][];
-            accArray[0] = new decimal[3];
+            accArray[0] = new decimal[2];
             accArray[1] = new decimal[3];
             accArray[2] = new decimal[4];
             accArray[3] = new decimal[2];
@@ -54,54 +55,60 @@ namespace ATM_project
             int tries = 0;
             bool successfull = false;
             bool Correct = false;
-            Console.WriteLine("Välkommen, vänligen tryck enter!");
-            Console.ReadKey();
 
-            while (successfull == false && tries != 3)
+
+
+            while (successfull == false)
             {
 
-                while (Correct == false)
+                while (Correct == false && tries != 3)
                 {
+                    Console.WriteLine("Välkommen, vänligen logga in!");
                     Console.WriteLine("Skriv användarnamn: ");
                     string username = Console.ReadLine();
                     Console.WriteLine("Skriv pinkod: ");
                     string pin = Console.ReadLine();
                     Check(Users, username, pin);
-                    
-                    
+                    tries++;
+
                     if (Check(Users, username, pin))
                     {
                         successfull = true;
-                        Meny(username,Users, accArray, successfull);
-                        
-                    }                   
+                        Meny(username, Users, accArray, successfull);
+
+                    }
+                    else if (tries == 3)
+                    {
+
+                        Console.WriteLine("För många försök! Försök igen senare");
+
+
+                    }
                     else
                     {
                         Console.WriteLine("Tyvärr du skrev fel användare eller pin, tyck enter och försök igen!");
                         Correct = false;
-                        tries++;
-                        Console.ReadKey();
-                        Console.Clear();
-                        
-
                     }
-                    
+
+
 
                 }
 
             }
 
         }
+
+
         static bool Check(string[,] Users, string username, string pin)
         {
             for (int i = 0; i < Users.GetLength(0); i++)
             {
-                if(Users[i, 0] == username  && Users[i, 1] == pin)
+                if (Users[i, 0] == username && Users[i, 1] == pin)
                 {
                     return true;
                 }
-                
-                    
+
+
             }
             return false;
 
@@ -110,44 +117,57 @@ namespace ATM_project
         {
             do
             {
-                
-                Console.WriteLine("[1] Se dina konton och saldo");
-                Console.WriteLine("[2] Överföring melland konto");
-                Console.WriteLine("[3] Ta ut pengar");
-                Console.WriteLine("[4] Avsluta");
-
-                int choice = int.Parse(Console.ReadLine());
-
-
-                switch (choice)
+                try
                 {
-                    case 1:
-                        Console.WriteLine("Dina konton och saldo");
-                        account(Users, accArray, username);
-                        
-                        break;
+                    Console.WriteLine("[1] Se dina konton och saldo");
+                    Console.WriteLine("[2] Överföring melland konto");
+                    Console.WriteLine("[3] Ta ut pengar");
+                    Console.WriteLine("[4] Avsluta");
 
-                    case 2:
-                        Console.WriteLine("Överföring");
-                        //transfer();
-                        break;
+                    int choice = int.Parse(Console.ReadLine());
 
-                    case 3:
-                        Console.WriteLine("Ta ut pengar");
-                        //withdraw();
-                        break;
 
-                    case 4:
-                        Console.WriteLine("Avsluta, tack för du använder vår tjänst.");
-                        //CloseDown
-                        break;
-                  
+                    switch (choice)
+                    {
+                        case 1:
+                            Console.WriteLine("Dina konton och saldo");
+                            account(Users, accArray, username);
+
+
+                            break;
+
+                        case 2:
+                            Console.WriteLine("Överföring");
+                            //transfer();
+                            break;
+
+                        case 3:
+                            Console.WriteLine("Ta ut pengar");
+                            withdraw(Users, accArray, username);
+                            break;
+
+                        case 4:
+                            Console.WriteLine("Du har loggat ut, tack för att du använder vår tjänst!");
+                            successfull = false;
+                            Console.ReadKey();
+
+                            break;
+
+                        default:
+                            Console.WriteLine("Fel, vänligen välj något av de 4 valen");
+                            break;
+                    }
                 }
+                catch
+                {
+                    Console.WriteLine("Fel inmatnings format");
+                }
+
             } while (successfull == true);
-        }    
+        }
         public static int LoginUser(string[,] Users, string username)
         {
-            for (int i = 0;i < Users.GetLength(0); i++)
+            for (int i = 0; i < Users.GetLength(0); i++)
             {
                 if (Users[i, 0] == username)
                 {
@@ -160,36 +180,114 @@ namespace ATM_project
         {
             int Active = LoginUser(Users, username);
             string[] AccArr = new string[4];
-            AccArr[0] = "Lönekonto";
-            AccArr[1] = "Sparkonto";
-            AccArr[2] = "Semesterkonto";
-            AccArr[3] = "Privatkonto";
+            AccArr[0] = "1.Lönekonto";
+            AccArr[1] = "2.Sparkonto";
+            AccArr[2] = "3.Semesterkonto";
+            AccArr[3] = "4.Privatkonto";
             Console.WriteLine("Konton");
             for (int i = 0; i < accArray[Active].Length; i++)
             {
                 if (accArray[Active][i] != 0)
                 {
                     Console.WriteLine($"{AccArr[i]} {accArray[Active][i]}kr");
-
-
                 }
-                return;
             }
-                
-                
-            
         }
         public static void transfer()
         {
 
         }
-        public static void withdraw()
+        public static void withdraw(string[,] Users, decimal[][] accArray, string username)
         {
+            int Active = LoginUser(Users, username);
+            string[] AccArr = new string[4];
+            AccArr[0] = "1.Lönekonto";
+            AccArr[1] = "2.Sparkonto";
+            AccArr[2] = "3.Semesterkonto";
+            AccArr[3] = "4.Privatkonto";
+            string[] AccChoice = { "1 - Lönekonto\n", "2 - Sparkonto\n", "3 - Semesterkonto\n", "4 - Privatkonto\n" };
+            Console.WriteLine("Konton");
+            Console.WriteLine("Vänligen välj konto du vill göra uttag från");
+            for (int i = 0; i < accArray[Active].Length; i++)
+            {
+                if (accArray[Active][i] != 0)
+                {
+                    Console.WriteLine($"{AccArr[i]} {accArray[Active][i]}");
+                }
+            }
+                
+            int Choice = int.Parse(Console.ReadLine());
 
-        }
-        public static void CloseDown()
-        {
+            switch (Choice)
+            {
+                case 1: Choice = 0;
+                    break;
+                case 2: Choice = 1;
+                    break;
+                case 3: Choice = 2;
+                    break;
+                case 4: Choice = 3;
+                    break;
+                default:
+                    Console.WriteLine("Fel, vänligen välj något av alternativen");
+                    break;
+            }
+                      
+                
+            bool successfull = false;
+            bool pinCheck = false;
+            int pinTries = 0;
+            while (successfull == false)
+            {
+                
+                while (pinCheck == false && pinTries != 3)
+                {                  
+                    Console.WriteLine("Hur mycket vill du ta ut?: ");
+                    decimal sum = decimal.Parse(Console.ReadLine());
+                    Console.WriteLine("Vänligen skriv pinkod: ");
+                    string pinKod = Console.ReadLine();
+                  
+                    
+                    if (pinKod == Users[Active, 1])
+                    {
+                        if(sum < accArray[Active][Choice])
+                        {
+                            successfull = true;
+                            decimal balance = accArray[Active][Choice] - sum;
+                            accArray[Active][Choice] = balance;
+                            Console.WriteLine($"Ditt saldo är nu {accArray[Active][Choice]}");
+                            Console.WriteLine("Tryck enter för att komma till meny");
+                            Console.ReadKey();
+                            Meny(username, Users, accArray, successfull);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Förstor summa, tryck enter och försök igen");
+                            Console.ReadKey();
+                            Console.Clear();
+                        }
+                        
+                    }
+                    else if (pinTries == 3)
+                    {
+                        Console.WriteLine("Förmånga försök!");
+                        Console.ReadKey();
+                        Console.Clear();
+                        Meny(username, Users, accArray, successfull);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fel försök igen!");
+                        pinTries++;
+                        pinCheck = false;
+                        
+                    }
 
+                }
+
+            }
+            
+            
         }
-    }
+    } 
 }
