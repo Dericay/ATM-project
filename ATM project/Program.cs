@@ -11,11 +11,11 @@ namespace ATM_project
     {
         static void Main(string[] args)
         {
-            LogIn();
+            LogIn();//the first method to start the program
         }
         public static void LogIn()
         {
-            string[,] Users = new string[5, 2];
+            string[,] Users = new string[5, 2];//2D array for username and pin
             Users[0, 0] = "Anas";
             Users[0, 1] = "1234";
             Users[1, 0] = "Alfred";
@@ -27,7 +27,7 @@ namespace ATM_project
             Users[4, 0] = "Lotta";
             Users[4, 1] = "1111";
 
-            decimal[][] accArray = new decimal[5][];
+            decimal[][] accArray = new decimal[5][];//Jagged array for accounts
             accArray[0] = new decimal[2];
             accArray[1] = new decimal[3];
             accArray[2] = new decimal[4];
@@ -58,10 +58,10 @@ namespace ATM_project
 
 
 
-            while (successfull == false)
+            while (successfull == false)//will be faulse untill you login
             {
 
-                while (Correct == false && tries != 3)
+                while (Correct == false && tries != 3)  //another while loop for login system, will block when reaching 3 tries            
                 {
                     Console.WriteLine("Välkommen, vänligen logga in!");
                     Console.WriteLine("Skriv användarnamn: ");
@@ -99,7 +99,7 @@ namespace ATM_project
         }
 
 
-        static bool Check(string[,] Users, string username, string pin)
+        static bool Check(string[,] Users, string username, string pin)//method for checking username and pin
         {
             for (int i = 0; i < Users.GetLength(0); i++)
             {
@@ -113,12 +113,13 @@ namespace ATM_project
             return false;
 
         }
-        public static void Meny(string username, string[,] Users, decimal[][] accArray, bool successfull)
+        public static void Meny(string username, string[,] Users, decimal[][] accArray, bool successfull)//Method for meny and choice
         {
             do
             {
                 try
                 {
+                    Console.WriteLine("Välkommen!");
                     Console.WriteLine("[1] Se dina konton och saldo");
                     Console.WriteLine("[2] Överföring melland konto");
                     Console.WriteLine("[3] Ta ut pengar");
@@ -127,18 +128,16 @@ namespace ATM_project
                     int choice = int.Parse(Console.ReadLine());
 
 
-                    switch (choice)
+                    switch (choice)//Switch for the choices, the choice you make will run that method
                     {
                         case 1:
                             Console.WriteLine("Dina konton och saldo");
                             account(Users, accArray, username);
-
-
-                            break;
+                           break;
 
                         case 2:
                             Console.WriteLine("Överföring");
-                            //transfer();
+                            transfer(Users, accArray, username);
                             break;
 
                         case 3:
@@ -165,7 +164,7 @@ namespace ATM_project
 
             } while (successfull == true);
         }
-        public static int LoginUser(string[,] Users, string username)
+        public static int LoginUser(string[,] Users, string username)//method to check current logged in user
         {
             for (int i = 0; i < Users.GetLength(0); i++)
             {
@@ -176,7 +175,7 @@ namespace ATM_project
             }
             return 0;
         }
-        public static void account(string[,] Users, decimal[][] accArray, string username)
+        public static void account(string[,] Users, decimal[][] accArray, string username)//method to check account on active user
         {
             int Active = LoginUser(Users, username);
             string[] AccArr = new string[4];
@@ -192,12 +191,93 @@ namespace ATM_project
                     Console.WriteLine($"{AccArr[i]} {accArray[Active][i]}kr");
                 }
             }
+            Console.WriteLine("Tryck enter för att komma till meny");
+            Console.ReadKey();
+            Console.Clear();
         }
-        public static void transfer()
+        public static void transfer(string[,] Users, decimal[][] accArray, string username)//Method to transfer between accounts
         {
+            bool successfull = false;
+            int Active = LoginUser(Users, username);
+            string[] AccArr = new string[4];
+            AccArr[0] = "1.Lönekonto";
+            AccArr[1] = "2.Sparkonto";
+            AccArr[2] = "3.Semesterkonto";
+            AccArr[3] = "4.Privatkonto";
+            string[] AccChoice = { "1 - Lönekonto\n", "2 - Sparkonto\n", "3 - Semesterkonto\n", "4 - Privatkonto\n" };
+            Console.WriteLine("Konton");
+            Console.WriteLine("Vänligen välj konto du vill göra överföring ifrån");
+            for (int i = 0; i < accArray[Active].Length; i++)                       //Prints out accounts on active user
+            {
+                if (accArray[Active][i] != 0)
+                {
+                    Console.WriteLine($"{AccArr[i]} {accArray[Active][i]}");
+                }
+            }
 
+            int Choice1 = int.Parse(Console.ReadLine());
+
+            switch (Choice1) //Switch to choose account you wanna transfer from
+            {
+                case 1:
+                    Choice1 = 0;
+                    break;
+                case 2:
+                    Choice1 = 1;
+                    break;
+                case 3:
+                    Choice1 = 2;
+                    break;
+                case 4:
+                    Choice1 = 3;
+                    break;
+                default:
+                    Console.WriteLine("Fel, vänligen välj något av alternativen");
+                    break;
+            }
+            Console.WriteLine("Hur mycket vill du föra över?");
+            decimal sum = decimal.Parse(Console.ReadLine());
+            Console.WriteLine("Vänligen välj konto du vill föra över till");
+            for (int i = 0; i < accArray[Active].Length; i++)
+            {
+                if (accArray[Active][i] != 0)
+                {
+                    Console.WriteLine($"{AccArr[i]} {accArray[Active][i]}");
+                }
+            }
+            int Choice2 = int.Parse(Console.ReadLine()); //Second choice to choose account you want to transfer too
+            switch (Choice2)
+            {
+                case 1:
+                    Choice2 = 0;
+                    break;
+                case 2:
+                    Choice2 = 1;
+                    break;
+                case 3:
+                    Choice2 = 2;
+                    break;
+                case 4:
+                    Choice2 = 3;
+                    break;
+                case 5:
+                    Choice2 = 4;
+                    break;
+                default:
+                    Console.WriteLine("Fel, vänligen välj ett av alternativen");
+                    break;
+            }
+            decimal balance = accArray[Active][Choice1] - sum;  //for transfering the money to the other account
+            decimal balance2 = accArray[Active][Choice2] + sum;           
+            accArray[Active][Choice1] = balance;
+            accArray[Active][Choice2] = balance2;
+            Console.WriteLine($"Ditt saldo är nu {AccArr[Choice2]}: {accArray[Active][Choice2]}");
+            Console.WriteLine("Tryck enter för att komma till meny");
+            Console.ReadKey();
+            Console.Clear();
+            Meny(username, Users, accArray, successfull);
         }
-        public static void withdraw(string[,] Users, decimal[][] accArray, string username)
+        public static void withdraw(string[,] Users, decimal[][] accArray, string username)// Method to withdraw money from account on activ user
         {
             int Active = LoginUser(Users, username);
             string[] AccArr = new string[4];
@@ -218,7 +298,7 @@ namespace ATM_project
                 
             int Choice = int.Parse(Console.ReadLine());
 
-            switch (Choice)
+            switch (Choice)//switch to choose with account you wanna withdraw from
             {
                 case 1: Choice = 0;
                     break;
@@ -240,7 +320,7 @@ namespace ATM_project
             while (successfull == false)
             {
                 
-                while (pinCheck == false && pinTries != 3)
+                while (pinCheck == false && pinTries != 3)//pin check, must enter the active user pin, will break after 3 tries
                 {                  
                     Console.WriteLine("Hur mycket vill du ta ut?: ");
                     decimal sum = decimal.Parse(Console.ReadLine());
@@ -258,6 +338,7 @@ namespace ATM_project
                             Console.WriteLine($"Ditt saldo är nu {accArray[Active][Choice]}");
                             Console.WriteLine("Tryck enter för att komma till meny");
                             Console.ReadKey();
+                            Console.Clear();
                             Meny(username, Users, accArray, successfull);
                         }
                         else
