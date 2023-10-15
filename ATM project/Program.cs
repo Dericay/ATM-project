@@ -147,9 +147,9 @@ namespace ATM_project
 
                         case 4:
                             Console.WriteLine("Du har loggat ut, tack för att du använder vår tjänst!");
-                            successfull = false;
                             Console.ReadKey();
-
+                            successfull = false;
+                            LogIn();
                             break;
 
                         default:
@@ -338,7 +338,7 @@ namespace ATM_project
                             Console.WriteLine($"Ditt saldo är nu {accArray[Active][Choice]}");
                             Console.WriteLine("Tryck enter för att komma till meny");
                             Console.ReadKey();
-                            Console.Clear();
+                            Console.Clear();                              
                             Meny(username, Users, accArray, successfull);
                         }
                         else
@@ -363,7 +363,7 @@ namespace ATM_project
                         pinCheck = false;
                         
                     }
-
+                    
                 }
 
             }
